@@ -15,6 +15,12 @@ class ClientIsValid
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $next($request);
+
+    $client = preg_replace('/[^0-9]/', '', $request->input('client'));
+
+      if($client === '11111111111' || $client === '12312312312' || $client === '22222222222'){
+          return $next($request);
+        }
+          return response()->json('Pedimos desculpas, mas CPF  informado não foi encontrado');
     }
 }
