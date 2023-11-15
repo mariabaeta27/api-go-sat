@@ -4,25 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Simulation;
 use Illuminate\Http\Request;
-
-
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Carbon\Carbon;
-
 
 class SimulationController extends Controller
 {
-
-
-
     //GET|HEAD        api/simulation .................... simulation.index
     public function index()
     {
-       return Simulation::select('id', 'client', 'simulationsCredit', 'simulationsOffer')->get();
+        return Simulation::select('id', 'client', 'simulationsCredit', 'simulationsOffer')->get();
     }
-
 
     // GET|HEAD        api/simulation/create ........... simulation.create ›
     public function create()
@@ -31,51 +22,74 @@ class SimulationController extends Controller
     }
 
     // POST            api/simulation .................... simulation.store
-  public function store(Request $request)
+    public function store(Request $request)
     {
-
-        //Consulte as ofertas de crédito
-
         $client = $request->input('client');
-        $response = Http::post("https://dev.gosat.org/api/v1/simulacao/credito", [
-          "cpf"=> $client
+        $simulationDB = DB::select('SELECT * from simulations where client = ?', [$client]);
+
+        // return $simulationDB;
+
+        if (empty($simulation)) {
+            $newSimulation = new Simulation();
+            $credits = $this->getCredits($client);
+
+            $institutions = $credits['instituicoes'];
+
+            $offers = collect($institutions)->map(function ($item) use ($client) {
+                $itemResults = [];
+                foreach ($item['modalidades'] as $subItem) {
+                    $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod']);
+
+                    $itemResults[$subItem['cod']] = $responseOffer->json();
+                }
+
+                return ['id' => $item['id'],  'offers' => $itemResults];
+            });
+
+            // return $credits;
+
+            //Salva os dados no banco
+            $newSimulation->client = $client;
+            $newSimulation->simulationsCredits = json_encode($credits);
+            $newSimulation->simulationsOffers = json_encode($offers);
+
+            $newSimulation->save();
+
+            return response()->json('Dados salvos com sucesso!');
+
+        } else {
+            return response()->json('Os dados já estão salvos!');
+        }
+
+    }
+
+    private function getCredits($cpf)
+    {
+        $response = Http::post('https://dev.gosat.org/api/v1/simulacao/credito', [
+            'cpf' => $cpf,
         ]);
 
-        // Simule as ofertas de crédito
+        return $response->json();
+    }
 
-        $simulation = $response['instituicoes'];
+    private function getOffers($cpf, $id, $cod)
+    {
 
+        $response = Http::post('https://dev.gosat.org/api/v1/simulacao/oferta', [
+            'cpf' => $cpf,
+            'instituicao_id' => $id,
+            'codModalidade' => $cod,
+        ]);
 
-        $offers =collect($simulation)->map(function($item) use ($client){
-            $itemResults=[];
-            foreach($item['modalidades'] as $subItem) {
-                $responseOffer = Http::post("https://dev.gosat.org/api/v1/simulacao/oferta", [
-                "cpf"=> $client,
-                "instituicao_id" =>$item['id'],
-                "codModalidade"=>  $subItem['cod']
-                ]);
-                $itemResults[$subItem['cod']]=['resultData' => $responseOffer->json() ];
-            };
+        return $response;
 
-            return ['id' =>$item['id'],  'offer'=> $itemResults];
-        });
-
-        return $offers;
-
-
-
-
-
-
-
-
-}
+    }
 
     // GET|HEAD        api/simulation/{simulation} ......... simulation.show 1.
     public function show(Simulation $simulation)
     {
         return response()->json([
-            'simulation'=>$simulation
+            'simulation' => $simulation,
         ]);
     }
 
@@ -89,37 +103,40 @@ class SimulationController extends Controller
     public function update(Request $request, Simulation $simulation)
     {
         $request->validate([
-            'client'=>'required',
-        'simulationsCredit'=>'required',
-        'simulationsOffer' =>'required'
+            'client' => 'required',
+            'simulationsCredit' => 'required',
+            'simulationsOffer' => 'required',
         ]);
 
         try {
 
             $product->fill($request->post())->update();
             $product->save();
+
             return response()->json([
-                'message'=>'Simulation Updated Successfully!!'
+                'message' => 'Simulation Updated Successfully!!',
             ]);
         } catch (\Throwable $th) {
             return response()->json([
-                'message'=>'Something goes wrong when updating a simulation!!!'
-            ],500);
+                'message' => 'Something goes wrong when updating a simulation!!!',
+            ], 500);
         }
     }
 
-  //  DELETE          api/simulation/{simulation} ... simulation.destroy
+    //  DELETE          api/simulation/{simulation} ... simulation.destroy
     public function destroy(Simulation $simulation)
     {
         try {
             $simulation->delete();
+
             return response()->json([
-                'message'=>'Simulation Deleted Successfully!!'
+                'message' => 'Simulation Deleted Successfully!!',
             ]);
         } catch (\Throwable $th) {
             \Log::error($th->getMessage());
+
             return response()->json([
-                'message'=>'Something goes wrong while deleting a simulation!!'
+                'message' => 'Something goes wrong while deleting a simulation!!',
             ]);
         }
     }
