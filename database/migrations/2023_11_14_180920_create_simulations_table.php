@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('simulations', function (Blueprint $table) {
             $table->id();
             $table->string('client');
-            $table->json('simulationsCredits');
-            $table->json('simulationsOffers');
+            $table->string('simulationsCredits');
+            $table->string('simulationsOffers');
             $table->timestamps();
         });
     }

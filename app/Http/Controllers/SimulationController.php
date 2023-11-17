@@ -4,62 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\Simulation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class SimulationController extends Controller
 {
-    //GET|HEAD        api/simulation .................... simulation.index
-    public function index()
-    {
-        return Simulation::select('id', 'client', 'simulationsCredit', 'simulationsOffer')->get();
-    }
-
-    // GET|HEAD        api/simulation/create ........... simulation.create ›
-    public function create()
-    {
-        //
-    }
-
     // POST            api/simulation .................... simulation.store
     public function store(Request $request)
     {
-        $client = $request->input('client');
-        $simulationDB = DB::select('SELECT * from simulations where client = ?', [$client]);
+        $bodyContent = $request->json()->all();
 
-        // return $simulationDB;
+        $client = $bodyContent['client'];
+        $amount = $bodyContent['amount'];
+        $installments = $bodyContent['installments'];
 
-        if (empty($simulation)) {
-            $newSimulation = new Simulation();
-            $credits = $this->getCredits($client);
+        $newSimulation = new Simulation();
+        $credits = $this->getCredits($client);
 
-            $institutions = $credits['instituicoes'];
+        $institutions = $credits['instituicoes'];
 
-            $offers = collect($institutions)->map(function ($item) use ($client) {
-                $itemResults = [];
-                foreach ($item['modalidades'] as $subItem) {
-                    $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod']);
+        $offers = collect(collect($institutions)->map(function ($item) use ($client, $amount, $installments) {
+            $itemResults = [];
+            foreach ($item['modalidades'] as $subItem) {
+                $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod']);
 
-                    $itemResults[$subItem['cod']] = $responseOffer->json();
+                $result = $this->getSimulations($responseOffer->json(), $amount, $installments);
+
+                if ($result !== 0) {
+                    $itemResults[] = (object) ['modalidadeCredito' => $subItem['nome'],  $result];
                 }
+            }
 
-                return ['id' => $item['id'],  'offers' => $itemResults];
-            });
+            if ($itemResults !== []) {
+                return (object) ['instituicaoFinanceira' => $item['nome'],   $itemResults];
+            }
+        }))->filter(function ($offer) {
+            return $offer !== null;
+        })->sortBy(function ($offer) {
+            return reset($offer);
+        })->values();
 
-            // return $credits;
+        $messageError = 'O valor  ou a quantidade de parcelas para empréstimo inserido não estão dentro do intervalo permitido.';
 
-            //Salva os dados no banco
-            $newSimulation->client = $client;
-            $newSimulation->simulationsCredits = json_encode($credits);
-            $newSimulation->simulationsOffers = json_encode($offers);
+        $result = (object) ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulação' => empty($offers) ? $messageError : $offers];
 
-            $newSimulation->save();
+        return $result;
 
-            return response()->json('Dados salvos com sucesso!');
+        //Salva os dados no banco
+        // $newSimulation->client = $client;
 
-        } else {
-            return response()->json('Os dados já estão salvos!');
-        }
+        // $newSimulation->save();
 
     }
 
@@ -85,59 +78,22 @@ class SimulationController extends Controller
 
     }
 
-    // GET|HEAD        api/simulation/{simulation} ......... simulation.show 1.
-    public function show(Simulation $simulation)
-    {
-        return response()->json([
-            'simulation' => $simulation,
-        ]);
-    }
-
-    // |HEAD        api/simulation/{simulation}/edit .... simulation.edit
-    public function edit(Simulation $simulation)
+    private function getSimulations($responseOffer, $amount, $installments)
     {
 
-    }
+        $minInstallment = $responseOffer['QntParcelaMin'];
+        $maxInstallment = $responseOffer['QntParcelaMax'];
+        $minValue = $responseOffer['valorMin'];
+        $maxValue = $responseOffer['valorMax'];
+        $interest = $responseOffer['jurosMes'];
 
-    // PUT|PATCH       api/simulation/{simulation} ..... simulation.update
-    public function update(Request $request, Simulation $simulation)
-    {
-        $request->validate([
-            'client' => 'required',
-            'simulationsCredit' => 'required',
-            'simulationsOffer' => 'required',
-        ]);
-
-        try {
-
-            $product->fill($request->post())->update();
-            $product->save();
-
-            return response()->json([
-                'message' => 'Simulation Updated Successfully!!',
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Something goes wrong when updating a simulation!!!',
-            ], 500);
+        if ($amount < $minValue || $amount > $maxValue) {
+            return 0;
+        } elseif ($installments < $minInstallment || $installments > $maxInstallment) {
+            return 0;
+        } else {
+            return (object) ['valorApagar' => $amount * $interest * $installments, 'taxaJuros' => $interest];
         }
-    }
 
-    //  DELETE          api/simulation/{simulation} ... simulation.destroy
-    public function destroy(Simulation $simulation)
-    {
-        try {
-            $simulation->delete();
-
-            return response()->json([
-                'message' => 'Simulation Deleted Successfully!!',
-            ]);
-        } catch (\Throwable $th) {
-            \Log::error($th->getMessage());
-
-            return response()->json([
-                'message' => 'Something goes wrong while deleting a simulation!!',
-            ]);
-        }
     }
 }
