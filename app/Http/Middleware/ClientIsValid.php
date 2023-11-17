@@ -24,6 +24,7 @@ class ClientIsValid
             return $next($request);
         }
 
-        return response()->json('Pedimos desculpas, mas CPF informado não foi encontrado!');
+        return response()->json('Pedimos desculpas, mas CPF informado não foi encontrado!', 422);
+
     }
 }

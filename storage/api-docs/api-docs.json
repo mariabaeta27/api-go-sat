@@ -1,0 +1,70 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Api Go Sat",
+        "description": "API desenvolvida durante teste prático",
+        "contact": {
+            "name": "Maria Baeta",
+            "url": "https://https://github.com/mariabaeta27/api-go-sat"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/simulation": {
+            "get": {
+                "summary": "Endpoint que retorna as simulações que estão salvas no banco",
+                "operationId": "22320d97bf65994a93245190509af925",
+                "responses": {
+                    "200": {
+                        "description": "Lista de simulações"
+                    },
+                    "400": {
+                        "description": "Mensagem de erro: Bad request"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Endpoint responsável por fazer consulta nas API disponibilizadas e gerar uma simulações a partir dos dados fornecidos.",
+                "operationId": "d0a2c724bafd4f56933bf4d3ea27ac48",
+                "requestBody": {
+                    "description": "Dados para a simulação: client(cpf), amount(valor solicitado), installments(quantidade de parcelas)",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "client",
+                                    "amount",
+                                    "installments"
+                                ],
+                                "properties": {
+                                    "client": {
+                                        "type": "string",
+                                        "example": "111.111.111.11"
+                                    },
+                                    "amount": {
+                                        "type": "integer",
+                                        "example": 6000
+                                    },
+                                    "installments": {
+                                        "type": "integer",
+                                        "example": 12
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Simulation created successfully!"
+                    },
+                    "400": {
+                        "description": "Mensagem de erro: Bad request"
+                    }
+                }
+            }
+        }
+    }
+}
