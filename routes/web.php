@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SimulationController;
-use App\Http\Middleware\ClientIsValid;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('simulation', SimulationController::class)->middleware(ClientIsValid::class);
+Route::get('/simulation', [SimulationController::class, 'getSimulations']);

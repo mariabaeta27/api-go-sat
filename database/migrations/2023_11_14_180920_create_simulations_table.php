@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('simulations', function (Blueprint $table) {
             $table->id();
-            $table->string('client');
-            $table->string('simulationsCredits');
-            $table->string('simulationsOffers');
+            $table->string('client')->nullable(false);
+            $table->integer('valueRequested')->nullable(false);
+            $table->integer('numberInstallments')->nullable(false);
+            $table->string('simulations');
             $table->timestamps();
         });
     }
 
-    /**
+    /**s
      * Reverse the migrations.
      */
     public function down(): void

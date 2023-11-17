@@ -9,10 +9,5 @@ class Simulation extends Model
 {
     use HasFactory;
 
-    protected $casts = [
-        'simulationsOffer' => 'array',
-        'simulationsCredit' => 'array',
-    ];
-
-    protected $fillable = ['client', 'simulationsCredit', 'simulationsOffer'];
+    protected $fillable = ['client', 'valueRequested', 'numberInstallments', 'simulations'];
 }
