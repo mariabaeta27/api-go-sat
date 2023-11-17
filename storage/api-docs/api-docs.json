@@ -58,7 +58,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Simulation created successfully!"
+                        "description": "Retorno da simulação salvo no banco!"
                     },
                     "400": {
                         "description": "Mensagem de erro: Bad request"

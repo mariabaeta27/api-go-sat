@@ -65,7 +65,7 @@ class SimulationController extends Controller
      *         ),
      *     ),
      *
-     *     @OA\Response(response="201", description="Simulation created successfully!"),
+     *     @OA\Response(response="201", description="Retorno da simulação salvo no banco!"),
      *     @OA\Response(response="400", description="Mensagem de erro: Bad request"),
      * )
      */
@@ -90,7 +90,7 @@ class SimulationController extends Controller
 
                     $result = $this->generateSimulations($responseOffer->json(), $amount, $installments);
 
-                    if (count($result) !== 0) {
+                    if (($result) !== 0) {
                         $itemResults[] = (object) [$subItem['nome'] => $result];
                     }
                 }
