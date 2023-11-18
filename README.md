@@ -97,3 +97,7 @@ Metodo:       Rota:
   GET|HEAD     api/documentation (Documentação das rotas no Swagger)
 
 ```
+
+### Retorno api
+
+![Descrição da Imagem](./public/assets/post.png)
