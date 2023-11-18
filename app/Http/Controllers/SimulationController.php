@@ -59,9 +59,9 @@ class SimulationController extends Controller
      *         @OA\JsonContent(
      *             required={"client", "amount", "installments"},
      *
-     *             @OA\Property(property="client", type="string", example="111.111.111.11"),
-     *             @OA\Property(property="amount", type="integer", example=6000),
-     *             @OA\Property(property="installments", type="integer", example=12),
+     *             @OA\Property(property="client", type="string", example="123.123.123-12"),
+     *             @OA\Property(property="amount", type="integer", example=16000),
+     *             @OA\Property(property="installments", type="integer", example=19),
      *         ),
      *     ),
      *
