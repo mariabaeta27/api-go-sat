@@ -84,39 +84,42 @@ class SimulationController extends Controller
 
             $institutions = $credits['instituicoes'];
 
-            $offers = collect(collect($institutions)->map(function ($item) use ($client, $amount, $installments, $urlBase) {
+            $offers = collect($institutions)->map(function ($item) use ($client, $amount, $installments, $urlBase) {
                 $itemResults = [];
                 foreach ($item['modalidades'] as $subItem) {
                     $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod'], $urlBase);
 
-                    $result = $this->generateSimulations($responseOffer->json(), $amount, $installments);
+                    $result = $this->generateSimulations($responseOffer->json(), $amount, $installments, $subItem['nome'], $item['nome']);
 
                     if (($result) !== 0) {
-                        $itemResults[] = (object) [$subItem['nome'] => $result];
+                        $itemResults[] = [$result];
                     }
                 }
 
                 if ($itemResults !== []) {
-                    return (object) ['instituicaoFinanceira' => $item['nome'], 'modalidadeCredito' => $itemResults];
+                    return [array_merge(...$itemResults)];
                 }
-            }))->filter(function ($offer) {
-                return $offer !== null;
-            })->sortBy(function ($offer) {
-                return reset($offer);
-            })->values();
+            });
+            // )->filter(function ($offer) {
+            //     return $offer !== null;
+            // });
+
+            // ->sortBy(function ($offer) {
+            // return reset($offer);
+            // })->values();
 
             $messageError = ['Não foi possível realizar uma simulação, pois o valor ou a quantidade de parcelas para empréstimo inserido não estão dentro do intervalo permitido.'];
 
-            $responseSimulation = count($offers) == 0 ? $messageError : $offers;
+            $responseSimulation = count($offers) == 0 ? $messageError : array_merge(...$offers);
 
-            $result = (object) ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacao' => $responseSimulation];
+            $result = (object) ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacoes' => array_merge(...$responseSimulation)];
 
             $newSimulation->client = $client;
             $newSimulation->valueRequested = $amount;
             $newSimulation->numberInstallments = $installments;
             $newSimulation->simulations = json_encode($responseSimulation);
 
-            $newSimulation->save();
+            // $newSimulation->save();
 
             return response()->json($result, 201);
         } catch (\Throwable $th) {
@@ -147,7 +150,7 @@ class SimulationController extends Controller
 
     }
 
-    private function generateSimulations($responseOffer, $amount, $installments)
+    private function generateSimulations($responseOffer, $amount, $installments, $modadelidade, $instituicao)
     {
 
         $minInstallment = $responseOffer['QntParcelaMin'];
@@ -161,7 +164,7 @@ class SimulationController extends Controller
         } elseif ($installments < $minInstallment || $installments > $maxInstallment) {
             return 0;
         } else {
-            return (object) ['valorApagar' => ($amount * $interest * $installments) + $amount, 'taxaJuros' => $interest];
+            return ['valorApagar' => ($amount * $interest * $installments) + $amount, 'taxaJuros' => $interest, 'modalidadeCredito' => $modadelidade, 'instituicaoFinanceira' => $instituicao];
         }
 
     }
