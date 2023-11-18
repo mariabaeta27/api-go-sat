@@ -82,9 +82,9 @@ class SimulationController extends Controller
             $newSimulation = new Simulation();
             $credits = $this->getCredits($client, $urlBase);
 
-            $institutions = $credits['instituicoes'];
+            return $credits;
 
-            $offers = collect($institutions)->map(function ($item) use ($client, $amount, $installments, $urlBase) {
+            $offers = collect($credits)->map(function ($item) use ($client, $amount, $installments, $urlBase) {
                 $itemResults = [];
                 foreach ($item['modalidades'] as $subItem) {
                     $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod'], $urlBase);
@@ -100,13 +100,6 @@ class SimulationController extends Controller
                     return [array_merge(...$itemResults)];
                 }
             });
-            // )->filter(function ($offer) {
-            //     return $offer !== null;
-            // });
-
-            // ->sortBy(function ($offer) {
-            // return reset($offer);
-            // })->values();
 
             $messageError = ['Não foi possível realizar uma simulação, pois o valor ou a quantidade de parcelas para empréstimo inserido não estão dentro do intervalo permitido.'];
 
@@ -134,7 +127,7 @@ class SimulationController extends Controller
             'cpf' => $cpf,
         ]);
 
-        return $response->json();
+        return $response->json()['instituicoes'];
     }
 
     private function getOffers($cpf, $id, $cod, $url)
