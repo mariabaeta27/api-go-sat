@@ -94,7 +94,7 @@ Metodo:       Rota:
 
   POST        api/simulation (Criação de simulação)
   GET|HEAD    api/simulation (Lista de simulações)
-  GET|HEAD     api/documentation (Documentação das rotas no Swagger)
+  GET|HEAD    api/documentation (Documentação das rotas no Swagger)
 
 ```
 
