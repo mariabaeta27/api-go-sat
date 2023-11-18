@@ -1,66 +1,99 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# Teste Go Sat
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Descrição:** O teste tem como objetivo validar os conhecimentos técnicos em PHP + Laravel;
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Pessoa avaliada:** [Maria Baeta](https://github.com/mariabaeta27);
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Stacks:** PHP, Laravel. SQlite, Swagger;
 
-## Learning Laravel
+**Desafio:** Desenvolver uma API para consultar a disponibilidade de crédito para um determinado CPF e informar qual é a melhor oportunidade a ser ofertada.
+<br/>
+*Observação: Foi disponibilizado uma API para consulta dos dados necessários para realização da tarefa.*
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## **Requisitos:**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Obrigatórios:
+  - [x] Utilizar o Swagger, Postman ou alguma ferramenta similar para documentar suas rotas;
+  - [x] Entregue uma documentação com todos os passos para executar seu projeto;
+  - [x] Utilizar banco de dados para persistir os dados gerados durante o teste;
+  - [x] Crie uma rota (endpoint) para receber qual CPF será consultado.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    ```bash
+      CPFs Disponíveis:
+      111.111.111-11
+      123.123.123.12
+      222.222.222.22
+    ```
 
-## Laravel Sponsors
+  - [ ] Desenvolver algum relatório gráfico fazendo uso linguagens e ferramentas Front-end;
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Opcionais:
+  - [ ] Disponibilizar o teste na internet, para que possa ser testado via navegador ou Postman.
 
-### Premium Partners
+## Retorno da api:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Selecione até 3 ofertas de crédito e ordene-as da mais vantajosa a menos vantajosa para o cliente. Para cada oferta de crédito selecionada deve-se aplicar lógicas (manipulação de estruturas de dados, realização de cálculos, etc) de forma que a oferta contenha as seguintes informações:
 
-## Contributing
+ ```bash
+    instituicaoFinanceira;
+    modalidadeCredito;
+    valorAPagar;
+    valorSolicitado;
+    taxaJuros;
+    qntParcelas
+  ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Setup dp projeto
 
-## Code of Conduct
+- **Importante:**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Baixe o repositorio [Git](https://github.com/mariabaeta27/api-go-sat)
+- Acesso a pasta do projeto
 
-## Security Vulnerabilities
+### Instale as dependências
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
 
-## License
+composer install
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+
+### Crie um arquivo de configuração de ambiente e gere a chave do aplicativo
+
+```bash
+
+cp .env.example .env
+php artisan key:generate
+
+```
+
+### Crie o banco de dados
+
+```bash
+
+php artisan migrate
+
+```
+
+### Inicie o servidor
+
+```bash
+
+php artisan serve
+
+```
+
+### Rotas disponíveis: 
+
+```bash
+
+Metodo:       Rota: 
+
+  POST        api/simulation (Criação de simulação)
+  GET|HEAD    api/simulation (Lista de simulações)
+  GET|HEAD     api/documentation (Documentação das rotas no Swagger)
+
+```

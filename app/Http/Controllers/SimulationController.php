@@ -73,20 +73,21 @@ class SimulationController extends Controller
     {
         try {
             $bodyContent = $request->json()->all();
+            $urlBase = env('URL_SIMULATION');
 
             $client = $bodyContent['client'];
             $amount = $bodyContent['amount'];
             $installments = $bodyContent['installments'];
 
             $newSimulation = new Simulation();
-            $credits = $this->getCredits($client);
+            $credits = $this->getCredits($client, $urlBase);
 
             $institutions = $credits['instituicoes'];
 
-            $offers = collect(collect($institutions)->map(function ($item) use ($client, $amount, $installments) {
+            $offers = collect(collect($institutions)->map(function ($item) use ($client, $amount, $installments, $urlBase) {
                 $itemResults = [];
                 foreach ($item['modalidades'] as $subItem) {
-                    $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod']);
+                    $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod'], $urlBase);
 
                     $result = $this->generateSimulations($responseOffer->json(), $amount, $installments);
 
@@ -119,23 +120,24 @@ class SimulationController extends Controller
 
             return response()->json($result, 201);
         } catch (\Throwable $th) {
-            return response()->json(['error' => 'Não foi possível criar as simulações!'], 400);
+            return response()->json(['error' => 'Não foi possível criar as simulações!'.$th], 400);
         }
     }
 
-    private function getCredits($cpf)
+    private function getCredits($cpf, $url)
     {
-        $response = Http::post('https://dev.gosat.org/api/v1/simulacao/credito', [
+
+        $response = Http::post($url.'/credito', [
             'cpf' => $cpf,
         ]);
 
         return $response->json();
     }
 
-    private function getOffers($cpf, $id, $cod)
+    private function getOffers($cpf, $id, $cod, $url)
     {
 
-        $response = Http::post('https://dev.gosat.org/api/v1/simulacao/oferta', [
+        $response = Http::post($url.'/oferta', [
             'cpf' => $cpf,
             'instituicao_id' => $id,
             'codModalidade' => $cod,
