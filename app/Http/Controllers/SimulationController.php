@@ -82,30 +82,28 @@ class SimulationController extends Controller
             $newSimulation = new Simulation();
             $credits = $this->getCredits($client, $urlBase);
 
-            return $credits;
+            $offers = [];
 
-            $offers = collect($credits)->map(function ($item) use ($client, $amount, $installments, $urlBase) {
-                $itemResults = [];
+            foreach ($credits as $item) {
                 foreach ($item['modalidades'] as $subItem) {
                     $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod'], $urlBase);
 
                     $result = $this->generateSimulations($responseOffer->json(), $amount, $installments, $subItem['nome'], $item['nome']);
 
                     if (($result) !== 0) {
-                        $itemResults[] = [$result];
+                        $offers[] = (object) $result;
                     }
                 }
 
-                if ($itemResults !== []) {
-                    return [array_merge(...$itemResults)];
-                }
-            });
+            }
+
+            return $offers;
 
             $messageError = ['Não foi possível realizar uma simulação, pois o valor ou a quantidade de parcelas para empréstimo inserido não estão dentro do intervalo permitido.'];
 
             $responseSimulation = count($offers) == 0 ? $messageError : array_merge(...$offers);
 
-            $result = (object) ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacoes' => array_merge(...$responseSimulation)];
+            $result = ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacoes' => array_merge(...$responseSimulation)];
 
             $newSimulation->client = $client;
             $newSimulation->valueRequested = $amount;
