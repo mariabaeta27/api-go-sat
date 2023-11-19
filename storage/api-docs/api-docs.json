@@ -40,15 +40,15 @@
                                 "properties": {
                                     "client": {
                                         "type": "string",
-                                        "example": "111.111.111.11"
+                                        "example": "123.123.123-12"
                                     },
                                     "amount": {
                                         "type": "integer",
-                                        "example": 6000
+                                        "example": 16000
                                     },
                                     "installments": {
                                         "type": "integer",
-                                        "example": 12
+                                        "example": 19
                                     }
                                 },
                                 "type": "object"
