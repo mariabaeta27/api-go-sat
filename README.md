@@ -113,6 +113,17 @@ php artisan serve
 
 ```
 
+## Gerando documentação: 
+
+Para gerar a documentação do Swagger rode o comando:
+
+
+```bash
+
+php artisan l5-swagger:generate
+
+```
+
 ## Rotas disponíveis:
 
 Após iniciar o servidor acesse a rota a seguir para ter acesso a documentação no Swagger: 
