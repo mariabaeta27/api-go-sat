@@ -136,7 +136,7 @@ http://localhost:8000/api/documentation
 
 ## Realizando requisições a API:
 
-Utilizando o Client API de sua preferencia (Insomnia) utilize as cUrl para realizar as requisições a api:
+Através do Client API de sua preferencia, como por exemplo o Insomnia, utilize os seguintes comandos cUrl para realizar as requisições a API:
 
 **Método Post**
 
