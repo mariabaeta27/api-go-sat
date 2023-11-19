@@ -35,7 +35,7 @@ class SimulationController extends Controller
             $dataBD = Simulation::all();
 
             $simulations = collect($dataBD->map(function ($item) {
-                $item['simulations'] = json_decode($item['simulations'], true);
+                $item['simulacoes'] = json_decode($item['simulacoes'], true);
 
                 return $item;
             }));
@@ -104,9 +104,9 @@ class SimulationController extends Controller
             $result = ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacoes' => $responseSimulation];
 
             $newSimulation->client = $client;
-            $newSimulation->valueRequested = $amount;
-            $newSimulation->numberInstallments = $installments;
-            $newSimulation->simulations = json_encode($responseSimulation);
+            $newSimulation->valorSolicitado = $amount;
+            $newSimulation->qntParcelas = $installments;
+            $newSimulation->simulacoes = json_encode($responseSimulation);
 
             $newSimulation->save();
 

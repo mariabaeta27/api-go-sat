@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('simulations', function (Blueprint $table) {
             $table->id();
             $table->string('client')->nullable(false);
-            $table->integer('valueRequested')->nullable(false);
-            $table->integer('numberInstallments')->nullable(false);
-            $table->string('simulations');
+            $table->integer('valorSolicitado')->nullable(false);
+            $table->integer('qntParcelas')->nullable(false);
+            $table->string('simulacoes');
             $table->timestamps();
         });
     }
