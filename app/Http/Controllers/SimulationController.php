@@ -54,14 +54,14 @@ class SimulationController extends Controller
      *
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Dados para a simulação: client(cpf), amount(valor solicitado), installments(quantidade de parcelas)",
+     *         description="Dados para a simulação: cliente(cpf), valorSolicitado(valor solicitado), qntParcelas(quantidade de parcelas)",
      *
      *         @OA\JsonContent(
-     *             required={"client", "amount", "installments"},
+     *             required={"cliente", "valorSolicitado", "qntParcelas"},
      *
-     *             @OA\Property(property="client", type="string", example="123.123.123-12"),
-     *             @OA\Property(property="amount", type="integer", example=16000),
-     *             @OA\Property(property="installments", type="integer", example=19),
+     *             @OA\Property(property="cliente", type="string", example="123.123.123-12"),
+     *             @OA\Property(property="valorSolicitado", type="integer", example=16000),
+     *             @OA\Property(property="qntParcelas", type="integer", example=19),
      *         ),
      *     ),
      *
@@ -75,20 +75,20 @@ class SimulationController extends Controller
             $bodyContent = $request->json()->all();
             $urlBase = env('URL_SIMULATION');
 
-            $client = $bodyContent['client'];
-            $amount = $bodyContent['amount'];
-            $installments = $bodyContent['installments'];
+            $cliente = $bodyContent['cliente'];
+            $valorSolicitado = $bodyContent['valorSolicitado'];
+            $qntParcelas = $bodyContent['qntParcelas'];
 
             $newSimulation = new Simulation();
-            $credits = $this->getCredits($client, $urlBase);
+            $credits = $this->getCredits($cliente, $urlBase);
 
             $offers = [];
 
             foreach ($credits as $item) {
                 foreach ($item['modalidades'] as $subItem) {
-                    $responseOffer = $this->getOffers($client, $item['id'], $subItem['cod'], $urlBase);
+                    $responseOffer = $this->getOffers($cliente, $item['id'], $subItem['cod'], $urlBase);
 
-                    $result = $this->generateSimulations($responseOffer->json(), $amount, $installments, $subItem['nome'], $item['nome']);
+                    $result = $this->generateSimulations($responseOffer->json(), $valorSolicitado, $qntParcelas, $subItem['nome'], $item['nome']);
 
                     if (($result) !== 0) {
                         $offers[] = $result;
@@ -101,11 +101,11 @@ class SimulationController extends Controller
 
             $responseSimulation = count($offers) == 0 ? $messageError : collect($offers)->sortBy('valorApagar')->values()->all();
 
-            $result = ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacoes' => $responseSimulation];
+            $result = ['valorSolicitado' => $valorSolicitado, 'qntParcelas' => $qntParcelas, 'simulacoes' => $responseSimulation];
 
-            $newSimulation->client = $client;
-            $newSimulation->valorSolicitado = $amount;
-            $newSimulation->qntParcelas = $installments;
+            $newSimulation->cliente = $cliente;
+            $newSimulation->valorSolicitado = $valorSolicitado;
+            $newSimulation->qntParcelas = $qntParcelas;
             $newSimulation->simulacoes = json_encode($responseSimulation);
 
             $newSimulation->save();
@@ -139,7 +139,7 @@ class SimulationController extends Controller
 
     }
 
-    private function generateSimulations($responseOffer, $amount, $installments, $modadelidade, $instituicao)
+    private function generateSimulations($responseOffer, $valorSolicitado, $qntParcelas, $modadelidade, $instituicao)
     {
 
         $minInstallment = $responseOffer['QntParcelaMin'];
@@ -148,12 +148,12 @@ class SimulationController extends Controller
         $maxValue = $responseOffer['valorMax'];
         $interest = $responseOffer['jurosMes'];
 
-        if ($amount < $minValue || $amount > $maxValue) {
+        if ($valorSolicitado < $minValue || $valorSolicitado > $maxValue) {
             return 0;
-        } elseif ($installments < $minInstallment || $installments > $maxInstallment) {
+        } elseif ($qntParcelas < $minInstallment || $qntParcelas > $maxInstallment) {
             return 0;
         } else {
-            return ['valorApagar' => ($amount * $interest * $installments) + $amount, 'taxaJuros' => $interest, 'modalidadeCredito' => $modadelidade, 'instituicaoFinanceira' => $instituicao];
+            return ['valorApagar' => ($valorSolicitado * $interest * $qntParcelas) + $valorSolicitado, 'taxaJuros' => $interest, 'modalidadeCredito' => $modadelidade, 'instituicaoFinanceira' => $instituicao];
         }
 
     }

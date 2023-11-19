@@ -27,26 +27,26 @@
                 "summary": "Endpoint responsável por fazer consulta nas API disponibilizadas e gerar uma simulações a partir dos dados fornecidos.",
                 "operationId": "d0a2c724bafd4f56933bf4d3ea27ac48",
                 "requestBody": {
-                    "description": "Dados para a simulação: client(cpf), amount(valor solicitado), installments(quantidade de parcelas)",
+                    "description": "Dados para a simulação: cliente(cpf), valorSolicitado(valor solicitado), qntParcelas(quantidade de parcelas)",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "client",
-                                    "amount",
-                                    "installments"
+                                    "cliente",
+                                    "valorSolicitado",
+                                    "qntParcelas"
                                 ],
                                 "properties": {
-                                    "client": {
+                                    "cliente": {
                                         "type": "string",
                                         "example": "123.123.123-12"
                                     },
-                                    "amount": {
+                                    "valorSolicitado": {
                                         "type": "integer",
                                         "example": 16000
                                     },
-                                    "installments": {
+                                    "qntParcelas": {
                                         "type": "integer",
                                         "example": 19
                                     }

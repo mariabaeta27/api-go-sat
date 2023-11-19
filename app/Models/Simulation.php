@@ -9,5 +9,5 @@ class Simulation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['client', 'valorSolicitado', 'qntParcelas', 'simulacoes'];
+    protected $fillable = ['cliente', 'valorSolicitado', 'qntParcelas', 'simulacoes'];
 }

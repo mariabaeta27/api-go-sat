@@ -142,14 +142,13 @@ Utilizando o Client API de sua preferencia (Insomnia) utilize as cUrl para reali
 
 ```bash
 
-  POST        api/simulation (Criação de simulação)
-  curl --request POST \
-  --url <http://localhost:8000/api/simulation> \
+ curl --request POST \
+  --url http://localhost:8000/api/simulation \
   --header 'Content-Type: application/json' \
   --data '{
- "client": "123.123.123-12",
- "amount": 16000,
- "installments": 19
+ "cliente": "123.123.123-12",
+ "valorSolicitado": 16000,
+ "qntParcelas": 19
 }'
 
 ```
@@ -158,9 +157,9 @@ Utilizando o Client API de sua preferencia (Insomnia) utilize as cUrl para reali
 
 ```bash
 
- GET|HEAD    api/simulation (Lista de simulações)
-  ccurl --request GET \
-  --url http://localhost:8000/api/simulation
+curl --request GET \
+  --url http://localhost:8000/api/simulation \
+  --header 'Content-Type: application/json'
 
 ```
 ## Retorno api
