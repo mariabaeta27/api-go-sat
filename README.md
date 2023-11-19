@@ -62,7 +62,7 @@ composer --version
 
 ```
 
-Em caso de já os ter instalados no terminal terá o retorno da versão, ao como:
+Se já estiverem instalados, a execução resultará em uma saída similar à seguinte, como exemplificado abaixo:
 
 ```bash
 
