@@ -91,26 +91,24 @@ class SimulationController extends Controller
                     $result = $this->generateSimulations($responseOffer->json(), $amount, $installments, $subItem['nome'], $item['nome']);
 
                     if (($result) !== 0) {
-                        $offers[] = (object) $result;
+                        $offers[] = $result;
                     }
                 }
 
             }
 
-            return $offers;
-
             $messageError = ['Não foi possível realizar uma simulação, pois o valor ou a quantidade de parcelas para empréstimo inserido não estão dentro do intervalo permitido.'];
 
-            $responseSimulation = count($offers) == 0 ? $messageError : array_merge(...$offers);
+            $responseSimulation = count($offers) == 0 ? $messageError : collect($offers)->sortBy('valorApagar')->values()->all();
 
-            $result = ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacoes' => array_merge(...$responseSimulation)];
+            $result = ['valorSolicitado' => $amount, 'qntParcelas' => $installments, 'simulacoes' => $responseSimulation];
 
             $newSimulation->client = $client;
             $newSimulation->valueRequested = $amount;
             $newSimulation->numberInstallments = $installments;
             $newSimulation->simulations = json_encode($responseSimulation);
 
-            // $newSimulation->save();
+            $newSimulation->save();
 
             return response()->json($result, 201);
         } catch (\Throwable $th) {
