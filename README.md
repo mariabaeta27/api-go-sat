@@ -28,7 +28,7 @@
       222.222.222.22
     ```
 
-  - [ ] Desenvolver algum relatório gráfico fazendo uso linguagens e ferramentas Front-end;
+  - [x] Desenvolver algum relatório gráfico fazendo uso linguagens e ferramentas Front-end [Repositorio frot](https://github.com/mariabaeta27/go_sat);
 
 - Opcionais:
   - [ ] Disponibilizar o teste na internet, para que possa ser testado via navegador ou Postman.
